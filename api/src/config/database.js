@@ -5,18 +5,23 @@ const { Pool } = require('pg');
 
 // สร้าง connection pool
 // ใน Docker ใช้ชื่อ container แทน localhost
-const pool = new Pool({
-    host: process.env.DB_HOST || 'db',           // ชื่อ container
-    port: parseInt(process.env.DB_PORT) || 5432,
-    database: process.env.DB_NAME || 'taskboard_db',
-    user: process.env.DB_USER || 'taskboard',
-    password: process.env.DB_PASSWORD || 'taskboard123',
+const pool = process.env.DATABASE_URL 
+    ? new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    })
+    : new Pool({
+        host: process.env.DB_HOST || 'db',           // ชื่อ container
+        port: parseInt(process.env.DB_PORT) || 5432,
+        database: process.env.DB_NAME || 'taskboard_db',
+        user: process.env.DB_USER || 'taskboard',
+        password: process.env.DB_PASSWORD || 'taskboard123',
     
     // Pool settings
-    max: 10,                      // Maximum connections
-    idleTimeoutMillis: 30000,     // Close idle connections after 30s
-    connectionTimeoutMillis: 5000  // Timeout after 5s
-});
+        max: 10,                      // Maximum connections
+        idleTimeoutMillis: 30000,     // Close idle connections after 30s
+        connectionTimeoutMillis: 5000  // Timeout after 5s
+    });
 
 // Connection events
 pool.on('connect', () => {

@@ -20,7 +20,7 @@ services:
   # ============================================
   db:
     image: postgres:16-alpine
-    container_name: taskboard-db
+    container_name: taskboard-db-${POSTGRES_DB:-taskboard_db}
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-taskboard_db}
